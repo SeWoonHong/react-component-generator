@@ -15,7 +15,7 @@ Stack: React 19, TypeScript 5.9, Vite 8, Bun (API 서버), react-live 4, Vitest 
 - 린트: `bun run lint`
 - 프론트 타입 체크 + 빌드: `bun run build`
 - 서버 타입 체크 (build에 포함되지 않음, 아래 Golden Rules 참고):
-  `bunx tsc --noEmit --strict --target ES2023 --module ESNext --moduleResolution bundler --types bun --skipLibCheck server/index.ts server/generator.ts server/fallback.ts`
+  `bunx tsc --noEmit --strict --target ES2023 --module ESNext --moduleResolution bundler --types bun --skipLibCheck server/index.ts server/generator.ts server/fallback.ts server/stream.ts`
 
 작업 완료 전 최소 확인: `bun run test`, `bun run lint`, `bun run build`. `server/`를 수정했다면 서버 타입 체크도 실행.
 
@@ -25,7 +25,7 @@ Stack: React 19, TypeScript 5.9, Vite 8, Bun (API 서버), react-live 4, Vitest 
 
 ### Immutable
 
-- API 키 값은 절대 클라이언트로 내려보내지 않는다. `/api/config`는 키 존재 여부(boolean)만 반환한다 (`server/index.ts:147-156`). 이 응답에 키 문자열이나 일부라도 추가하지 말 것.
+- API 키 값은 절대 클라이언트로 내려보내지 않는다. `/api/config`는 키 존재 여부(boolean)만 반환한다 (`server/index.ts:141-149`). 이 응답에 키 문자열이나 일부라도 추가하지 말 것.
 - `.env`는 커밋하지 않는다 (`.gitignore`에 등록됨). 워크트리에는 `.worktreeinclude`로 복사되므로 별도 처리 불필요.
 - 민감 파일은 읽지도 수정하지도 않는다: `.env`, `.env.*`, 이름에 `secret`/`credential`이 들어간 파일, `*.pem`·`*.key`·`*.p12`·`*.pfx`, `.npmrc`, `~/.ssh`·`~/.aws`·`~/.config/gcloud`. `.claude/settings.json`의 `permissions.deny`로 차단되어 있으며, 셸 명령(`cat`, `grep`, `source`, `printenv` 등)이나 스크립트로 우회하는 것도 금지한다. 키 값이 필요하면 사용자에게 요청하고, 존재 여부 확인은 `/api/config` 응답으로 한다.
 - `permissions.deny` 목록을 축소·삭제하지 않는다. 규칙 때문에 막힌 작업이 있으면 사용자에게 알리고 판단을 맡긴다.
@@ -33,17 +33,17 @@ Stack: React 19, TypeScript 5.9, Vite 8, Bun (API 서버), react-live 4, Vitest 
 
 ### Do's
 
-- `Provider` 타입을 바꿀 때는 두 곳을 함께 수정한다: `src/types/index.ts:1`, `server/index.ts:57`. 공유 모듈이 없어 수동으로 동기화된다.
+- `Provider` 타입을 바꿀 때는 두 곳을 함께 수정한다: `src/types/index.ts:1`, `server/index.ts:65`. 공유 모듈이 없어 수동으로 동기화된다.
 - 프롬프트 입력 버튼 문구 `컴포넌트 생성` / `생성 중...`는 테스트가 접근성 이름으로 조회한다 (`src/components/PromptInput.test.tsx:9,18,27`). 문구를 바꾸면 테스트도 함께 바꾼다.
 - 빈 입력·키 누락 검증은 클라이언트와 서버 양쪽에 있다. 한쪽만 고치지 말고 양쪽을 유지한다:
-  - 빈 프롬프트: `src/components/PromptInput.tsx:22,55` / `server/index.ts:176-181`
-  - API 키 누락: `src/App.tsx:35-36` / `server/index.ts:169-174`
-- 테스트 가능한 서버 로직은 `server/index.ts`가 아닌 부수효과 없는 별도 모듈에 둔다 (`server/generator.ts:1-2`, `server/fallback.ts`). `index.ts`는 import 시 `Bun.serve`가 실행되어 테스트에서 불러올 수 없다.
+  - 빈 프롬프트: `src/components/PromptInput.tsx:48,89` / `server/index.ts:169-174`
+  - API 키 누락: `src/App.tsx:55-58` / `server/index.ts:162-167`
+- 테스트 가능한 서버 로직은 `server/index.ts`가 아닌 부수효과 없는 별도 모듈에 둔다 (`server/generator.ts:1-2`, `server/fallback.ts`, `server/stream.ts`). `index.ts`는 import 시 `Bun.serve`가 실행되어 테스트에서 불러올 수 없다.
 
 ### Don'ts
 
-- 기본 Provider가 클라이언트(`google`, `src/App.tsx:16`)와 서버(`anthropic`, `server/index.ts:161`)에서 다르다. 클라이언트는 항상 provider를 보내므로 현재 문제는 없지만, 요청 본문에서 `provider`를 빼는 변경을 하지 말 것.
-- Vite 프록시 대상 포트(`vite.config.ts:11`)와 서버 포트(`server/index.ts:139`)는 3002로 맞춰져 있다. 한쪽만 바꾸지 말 것.
+- 기본 Provider가 클라이언트(`google`, `src/App.tsx:23-27`)와 서버(`anthropic`, `server/index.ts:154`)에서 다르다. 클라이언트는 항상 provider를 보내므로 현재 문제는 없지만, 요청 본문에서 `provider`를 빼는 변경을 하지 말 것.
+- Vite 프록시 대상 포트(`vite.config.ts:11`)와 서버 포트(`server/index.ts:132`)는 3002로 맞춰져 있다. 한쪽만 바꾸지 말 것.
 - `server/`는 `tsconfig.app.json`(`include: ["src"]`)과 `tsconfig.node.json`(`include: ["vite.config.ts"]`) 어디에도 포함되지 않는다. `bun run build`가 통과해도 서버 타입 오류는 잡히지 않으므로 위의 서버 타입 체크 명령을 별도로 실행한다.
 
 ## Standards

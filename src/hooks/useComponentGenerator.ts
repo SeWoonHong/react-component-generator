@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { GeneratedComponent, Provider } from '../types';
+import { parseComponents, STORAGE_KEYS } from '../utils/storage';
+import { usePersistentState } from './usePersistentState';
 
 interface UseComponentGeneratorReturn {
   components: GeneratedComponent[];
@@ -11,7 +13,11 @@ interface UseComponentGeneratorReturn {
 }
 
 export function useComponentGenerator(): UseComponentGeneratorReturn {
-  const [components, setComponents] = useState<GeneratedComponent[]>([]);
+  const [components, setComponents] = usePersistentState<GeneratedComponent[]>(
+    STORAGE_KEYS.components,
+    [],
+    parseComponents,
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,15 +52,15 @@ export function useComponentGenerator(): UseComponentGeneratorReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setComponents]);
 
   const removeComponent = useCallback((id: string) => {
     setComponents((prev) => prev.filter((c) => c.id !== id));
-  }, []);
+  }, [setComponents]);
 
   const clearAll = useCallback(() => {
     setComponents([]);
-  }, []);
+  }, [setComponents]);
 
   return { components, isLoading, error, generate, removeComponent, clearAll };
 }

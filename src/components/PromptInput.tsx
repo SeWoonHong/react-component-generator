@@ -4,6 +4,8 @@ import { MAX_PROMPT_LENGTH, validatePromptLength } from '../utils/validatePrompt
 interface PromptInputProps {
   onGenerate: (prompt: string) => void;
   isLoading: boolean;
+  history?: string[];
+  onClearHistory?: () => void;
 }
 
 const EXAMPLES = [
@@ -15,7 +17,26 @@ const EXAMPLES = [
   '테이블 행 상세보기 패널. 선택한 고객의 기본 정보와 최근 활동 표시',
 ];
 
-export function PromptInput({ onGenerate, isLoading }: PromptInputProps) {
+function PromptChips({ items, onPick }: { items: string[]; onPick: (item: string) => void }) {
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item}>
+          <button className="example-chip" onClick={() => onPick(item)} type="button">
+            {item}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function PromptInput({
+  onGenerate,
+  isLoading,
+  history = [],
+  onClearHistory,
+}: PromptInputProps) {
   const [prompt, setPrompt] = useState('');
   const { isValid, length } = validatePromptLength(prompt);
   const lengthError = isValid
@@ -27,10 +48,6 @@ export function PromptInput({ onGenerate, isLoading }: PromptInputProps) {
     if (prompt.trim() && isValid && !isLoading) {
       onGenerate(prompt.trim());
     }
-  };
-
-  const handleExampleClick = (example: string) => {
-    setPrompt(example);
   };
 
   return (
@@ -79,21 +96,22 @@ export function PromptInput({ onGenerate, isLoading }: PromptInputProps) {
           </button>
         </div>
       </form>
+      {history.length > 0 && (
+        <section className="prompt-examples" aria-labelledby="recent-prompts">
+          <div className="examples-head">
+            <h3 id="recent-prompts" className="examples-label">
+              최근 요청
+            </h3>
+            <button className="key key--ghost" onClick={onClearHistory} type="button">
+              기록 지우기
+            </button>
+          </div>
+          <PromptChips items={history} onPick={setPrompt} />
+        </section>
+      )}
       <div className="prompt-examples">
         <p className="examples-label">이렇게 요청해 보세요</p>
-        <ul>
-          {EXAMPLES.map((example) => (
-            <li key={example}>
-              <button
-                className="example-chip"
-                onClick={() => handleExampleClick(example)}
-                type="button"
-              >
-                {example}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <PromptChips items={EXAMPLES} onPick={setPrompt} />
       </div>
     </div>
   );

@@ -1,0 +1,9 @@
+{
+  "skill_name": "created-pr",
+  "evals": [
+    {"id": 1, "prompt": "PR 만들어줘", "expected_output": "한국어 템플릿으로 제목·본문 작성, bun run test 등 실제 검증 결과 포함, 동작 단위 변경 설명", "files": ["fixtures/kr-feature-*"]},
+    {"id": 2, "prompt": "지금 작업한 거 PR 올려줘", "expected_output": "main 브랜치이므로 PR을 만들지 않고 작업 브랜치 생성을 안내", "files": ["fixtures/on-main-*"]},
+    {"id": 3, "prompt": "open a PR for this branch", "expected_output": "PR 언어 명시가 없는 프로젝트이므로 영어 템플릿 사용, node --test 결과 포함", "files": ["fixtures/en-project-*"]},
+    {"id": 4, "prompt": "PR 생성해줘", "expected_output": "커밋된 config/dev.json에 API 키가 있으므로 PR을 만들지 않고 멈춤", "files": ["fixtures/secret-leak-*"]}
+  ]
+}

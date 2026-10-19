@@ -37,3 +37,9 @@ dist-ssr
 
 # playwright-cli 세션 산출물
 .playwright-cli/
+
+# skill-creator 테스트 작업 폴더 (테스트용 가짜 API 키가 들어 있을 수 있음)
+.claude/skills/*-workspace/
+
+# Python 캐시
+__pycache__/

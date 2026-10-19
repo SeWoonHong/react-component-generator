@@ -19,12 +19,16 @@ Stack: React 19, TypeScript 5.9, Vite 8, Bun (API 서버), react-live 4, Vitest 
 
 작업 완료 전 최소 확인: `bun run test`, `bun run lint`, `bun run build`. `server/`를 수정했다면 서버 타입 체크도 실행.
 
+`git commit`은 PreToolUse 훅(`.claude/hooks/require-tests-pass.sh`)이 `bun run test`를 먼저 실행하고, 실패하면 커밋을 차단한다. 차단되면 훅 출력의 실패 테스트를 고친 뒤 다시 커밋한다. `--no-verify`나 훅 설정 수정으로 우회하지 않는다.
+
 ## Golden Rules
 
 ### Immutable
 
 - API 키 값은 절대 클라이언트로 내려보내지 않는다. `/api/config`는 키 존재 여부(boolean)만 반환한다 (`server/index.ts:147-156`). 이 응답에 키 문자열이나 일부라도 추가하지 말 것.
 - `.env`는 커밋하지 않는다 (`.gitignore`에 등록됨). 워크트리에는 `.worktreeinclude`로 복사되므로 별도 처리 불필요.
+- 민감 파일은 읽지도 수정하지도 않는다: `.env`, `.env.*`, 이름에 `secret`/`credential`이 들어간 파일, `*.pem`·`*.key`·`*.p12`·`*.pfx`, `.npmrc`, `~/.ssh`·`~/.aws`·`~/.config/gcloud`. `.claude/settings.json`의 `permissions.deny`로 차단되어 있으며, 셸 명령(`cat`, `grep`, `source`, `printenv` 등)이나 스크립트로 우회하는 것도 금지한다. 키 값이 필요하면 사용자에게 요청하고, 존재 여부 확인은 `/api/config` 응답으로 한다.
+- `permissions.deny` 목록을 축소·삭제하지 않는다. 규칙 때문에 막힌 작업이 있으면 사용자에게 알리고 판단을 맡긴다.
 - 생성된 코드는 react-live `noInline` 모드로 실행된다 (`src/components/LivePreview.tsx:10`). 따라서 생성 코드는 (1) `render(<X />)` 호출을 포함하고, (2) `import` 문이 없고, (3) TypeScript 문법이 없는 순수 JS여야 한다. 이 셋 중 하나라도 깨지면 미리보기가 렌더링되지 않는다.
 
 ### Do's

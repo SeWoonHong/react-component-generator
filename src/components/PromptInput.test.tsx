@@ -79,6 +79,39 @@ describe('PromptInput', () => {
     );
   });
 
+  it('최근 요청을 누르면 입력창에 채운다', async () => {
+    const user = userEvent.setup();
+    render(
+      <PromptInput
+        onGenerate={vi.fn()}
+        isLoading={false}
+        history={['검색 필터 바', '프로필 카드']}
+        onClearHistory={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: '프로필 카드' }));
+
+    expect(screen.getByRole('textbox')).toHaveValue('프로필 카드');
+  });
+
+  it('기록 지우기를 누르면 onClearHistory를 호출한다', async () => {
+    const onClearHistory = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <PromptInput
+        onGenerate={vi.fn()}
+        isLoading={false}
+        history={['프로필 카드']}
+        onClearHistory={onClearHistory}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: '기록 지우기' }));
+
+    expect(onClearHistory).toHaveBeenCalledTimes(1);
+  });
+
   it('로딩 중에는 생성 버튼이 비활성이고 "생성 중..." 을 보여준다', () => {
     render(<PromptInput onGenerate={vi.fn()} isLoading={true} />);
     expect(screen.getByRole('button', { name: '생성 중...' })).toBeDisabled();

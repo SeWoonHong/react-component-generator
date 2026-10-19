@@ -3,6 +3,14 @@ import { PromptInput } from './components/PromptInput';
 import { ComponentCard } from './components/ComponentCard';
 import { useComponentGenerator } from './hooks/useComponentGenerator';
 import type { Provider } from './types';
+import { usePersistentState } from './hooks/usePersistentState';
+import {
+  addToHistory,
+  parseApiKeys,
+  parseHistory,
+  parseProvider,
+  STORAGE_KEYS,
+} from './utils/storage';
 import './App.css';
 
 const PROVIDER_CONFIG = {
@@ -11,9 +19,21 @@ const PROVIDER_CONFIG = {
 } as const;
 
 function App() {
-  const [apiKey, setApiKey] = useState('');
   const [showKey, setShowKey] = useState(false);
-  const [provider, setProvider] = useState<Provider>('google');
+  const [provider, setProvider] = usePersistentState<Provider>(
+    STORAGE_KEYS.provider,
+    'google',
+    (raw) => parseProvider(raw) ?? 'google',
+  );
+  // 키는 provider별로 따로 저장해 provider를 바꿨다 돌아와도 다시 입력하지 않게 한다.
+  const [apiKeys, setApiKeys] = usePersistentState(
+    STORAGE_KEYS.apiKeys,
+    parseApiKeys('{}'),
+    parseApiKeys,
+  );
+  const apiKey = apiKeys[provider];
+  const [history, setHistory] = usePersistentState<string[]>(STORAGE_KEYS.history, [], parseHistory);
+  const setApiKey = (value: string) => setApiKeys((prev) => ({ ...prev, [provider]: value }));
   const [envKeys, setEnvKeys] = useState<Record<Provider, boolean>>({
     anthropic: false,
     google: false,
@@ -36,12 +56,12 @@ function App() {
       alert(`${PROVIDER_CONFIG[provider].label} API 키를 입력하거나 .env에 설정해주세요.`);
       return;
     }
+    setHistory((prev) => addToHistory(prev, prompt));
     generate(prompt, apiKey || undefined, provider);
   };
 
   const handleProviderChange = (newProvider: Provider) => {
     setProvider(newProvider);
-    setApiKey('');
   };
 
   return (
@@ -66,7 +86,12 @@ function App() {
 
         <main className="machine-body">
           <section className="composer" aria-label="컴포넌트 생성">
-            <PromptInput onGenerate={handleGenerate} isLoading={isLoading} />
+            <PromptInput
+              onGenerate={handleGenerate}
+              isLoading={isLoading}
+              history={history}
+              onClearHistory={() => setHistory([])}
+            />
           </section>
 
           <aside className="back-panel" aria-label="실행 설정">

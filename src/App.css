@@ -243,6 +243,27 @@
   margin-top: 22px;
 }
 
+.prompt-examples + .prompt-examples {
+  margin-top: 18px;
+}
+
+.examples-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.examples-head .examples-label {
+  margin-bottom: 0;
+}
+
+.examples-head .key {
+  min-height: 28px;
+  padding: 0 4px;
+  font-size: 0.82rem;
+}
+
 .examples-label {
   margin-bottom: 8px;
   color: var(--ink-soft);

@@ -47,6 +47,7 @@ Stack: React 19, TypeScript 5.9, Vite 8, Bun (API 서버), react-live 4, Vitest 
 - UI 문구와 코드 주석은 한국어. 테스트 이름도 한국어 문장으로 작성한다 (`server/*.test.ts`, `src/components/PromptInput.test.tsx`).
 - 스타일은 `src/App.css`의 CSS 변수(`src/index.css` `:root`)를 사용한다. 새 색상을 하드코딩하기 전에 기존 토큰을 확인할 것. UI 테마는 레트로 프린터 컨셉(본체, 출력구, 연속 용지)으로 통일되어 있다.
 - 커밋: `<type>: <한국어 요약>` (type: feat / fix / refactor / chore). 상세 절차는 `.claude/skills/commit/SKILL.md`.
+- PR 본문: 한국어 템플릿 (`.claude/skills/created-pr/references/pr-template-kr.md`). 제목도 `<type>: <한국어 요약>`.
 - 기본 브랜치 `main`, 원격 `origin` (GitHub 비공개 저장소).
 
 ## Maintenance Policy

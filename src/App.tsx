@@ -38,7 +38,7 @@ function App() {
     anthropic: false,
     google: false,
   });
-  const { components, isLoading, error, generate, removeComponent, clearAll } =
+  const { components, streaming, isLoading, error, generate, removeComponent, clearAll } =
     useComponentGenerator();
 
   useEffect(() => {
@@ -163,7 +163,8 @@ function App() {
 
       <section className="feed" aria-label="생성된 컴포넌트">
         <div className="paper-stack">
-          {isLoading && (
+          {/* 스트림이 열리기 전까지만 대기 용지를 보여주고, 이후엔 스트리밍 카드가 대신한다. */}
+          {isLoading && !streaming && (
             <div className="sheet sheet--pending" role="status">
               <p className="dot-print">생성 중</p>
               <p>요청한 컴포넌트를 만들고 있습니다.</p>
@@ -178,13 +179,15 @@ function App() {
             </div>
           )}
 
-          {components.map((component) => (
+          {/* 스트리밍 카드와 완료 카드가 같은 목록·같은 key라서 완료 시 카드가 다시 출력되지 않고 탭만 바뀐다. */}
+          {(streaming ? [streaming, ...components] : components).map((component) => (
             <ComponentCard
               key={component.id}
               component={component}
               onRemove={removeComponent}
               onRegenerate={handleGenerate}
               isLoading={isLoading}
+              isStreaming={component === streaming}
             />
           ))}
         </div>

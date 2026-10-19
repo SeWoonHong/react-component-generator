@@ -780,6 +780,29 @@
   tab-size: 2;
 }
 
+/* 받는 중인 코드: 높이를 묶어 두고 끝에 인쇄 커서를 깜빡인다 */
+.code-block--streaming {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.code-block--streaming code::after {
+  content: '';
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  margin-left: 2px;
+  background: var(--ink-soft);
+  vertical-align: -0.2em;
+  animation: blink 1s steps(1) infinite;
+}
+
+.tab:disabled {
+  color: var(--ink-faint);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* ── 반응형 ─────────────────────────────────────── */
 
 @media (max-width: 1000px) {
@@ -867,7 +890,8 @@
   .component-card,
   .sheet--pending,
   .slot--printing .printhead,
-  .sheet--pending .dot-print::after {
+  .sheet--pending .dot-print::after,
+  .code-block--streaming code::after {
     animation: none;
   }
 

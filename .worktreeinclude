@@ -1,0 +1,3 @@
+# Claude Code가 워크트리를 만들 때 복사할 gitignore 파일 (.gitignore 문법)
+# claude -w, 세션 중 "워크트리에서 작업해줘" 모두 적용된다
+.env

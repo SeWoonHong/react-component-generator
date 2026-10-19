@@ -1,0 +1,39 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Worklog
+.worklog/
+
+# Claude Code 워크트리 (claude -w, 세션 중 워크트리)
+.claude/worktrees/
+
+.env
+# 에이전트 산출물 (현재 비공개), 단 Codex용 공용 스킬 폴더는 예외로 공유한다
+.agents/*
+!.agents/skills/
+!.agents/skills/**
+
+# playwright-cli 세션 산출물
+.playwright-cli/

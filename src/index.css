@@ -1,0 +1,59 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  /* 책상 · 본체 · 용지 · 리본 잉크 */
+  --desk: #3a3e48;
+  --desk-deep: #2b2e36;
+  --chassis: #cdc7b6;
+  --chassis-light: #ddd8ca;
+  --chassis-shade: #a8a191;
+  --paper: #fbfbf5;
+  --greenbar: #dcead3;
+  --ink: #23273a;
+  --ink-soft: #5c5f6e;
+  --ink-faint: #8d8f99;
+  --keycap: #2d46c2;
+  --keycap-deep: #1d2f8a;
+  --led: #f0a21e;
+  --led-ready: #57c46f;
+  --danger: #b3342b;
+
+  --font-body: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif;
+  --font-dot: 'VT323', 'IBM Plex Mono', monospace;
+  --font-code: 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--desk);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--led);
+  outline-offset: 2px;
+}

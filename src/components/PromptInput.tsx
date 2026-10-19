@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MAX_PROMPT_LENGTH, validatePromptLength } from '../utils/validatePrompt';
 
 interface PromptInputProps {
   onGenerate: (prompt: string) => void;
@@ -16,10 +17,14 @@ const EXAMPLES = [
 
 export function PromptInput({ onGenerate, isLoading }: PromptInputProps) {
   const [prompt, setPrompt] = useState('');
+  const { isValid, length } = validatePromptLength(prompt);
+  const lengthError = isValid
+    ? null
+    : `${MAX_PROMPT_LENGTH}자 이내로 입력해 주세요. ${length - MAX_PROMPT_LENGTH}자를 줄이면 생성할 수 있습니다.`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (prompt.trim() && !isLoading) {
+    if (prompt.trim() && isValid && !isLoading) {
       onGenerate(prompt.trim());
     }
   };
@@ -41,18 +46,30 @@ export function PromptInput({ onGenerate, isLoading }: PromptInputProps) {
           placeholder="예: 고객 목록 테이블 위에 들어갈 검색 필터 바를 만들어줘. 상태, 담당자, 날짜 범위 필터가 필요해."
           className="prompt-textarea"
           rows={4}
+          aria-invalid={!isValid}
+          aria-describedby={lengthError ? 'prompt-error' : undefined}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
               handleSubmit(e);
             }
           }}
         />
+        {lengthError && (
+          <p id="prompt-error" className="prompt-error" role="alert">
+            {lengthError}
+          </p>
+        )}
         <div className="prompt-actions">
-          <span className="prompt-hint">⌘ + Enter로도 생성할 수 있습니다</span>
+          <div className="prompt-meta">
+            <span className={`prompt-count ${isValid ? '' : 'prompt-count--over'}`}>
+              {length} / {MAX_PROMPT_LENGTH}
+            </span>
+            <span className="prompt-hint">⌘ + Enter로도 생성할 수 있습니다</span>
+          </div>
           <button
             type="submit"
             className="btn-generate"
-            disabled={!prompt.trim() || isLoading}
+            disabled={!prompt.trim() || !isValid || isLoading}
           >
             {isLoading ? (
               <span className="loading-spinner">생성 중...</span>

@@ -164,9 +164,44 @@
   margin-top: 4px;
 }
 
+.prompt-meta {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+}
+
+.prompt-count {
+  color: var(--ink-soft);
+  font-family: var(--font-dot);
+  font-size: 1.15rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.prompt-count--over {
+  color: var(--danger-ink);
+}
+
 .prompt-hint {
   color: var(--ink-soft);
   font-size: 0.84rem;
+}
+
+.prompt-textarea[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.prompt-textarea[aria-invalid='true']:focus {
+  border-color: var(--danger);
+  box-shadow:
+    inset 0 2px 3px rgba(35, 39, 58, 0.14),
+    0 0 0 3px rgba(179, 52, 43, 0.18);
+}
+
+.prompt-error {
+  color: var(--danger-ink);
+  font-size: 0.88rem;
+  font-weight: 500;
 }
 
 /* 큰 키캡: 누르면 실제로 눌린다 */
@@ -764,6 +799,10 @@
 
   .prompt-hint {
     display: none;
+  }
+
+  .prompt-meta {
+    justify-content: flex-end;
   }
 
   .prompt-examples ul {
